@@ -53,7 +53,7 @@ class UNet(nn.Module):
         self.decreasing_layers = self.create_decreasing_layers()
         self.bottleneck = self.create_bottleneck_layers()
         self.increasing_layers = self.create_increasing_layers()
-        self.last_conv_layer = nn.Conv2d(in_channels=features[0], out_channels=self.NUM_OF_CLASSES)
+        self.last_conv_layer = nn.Conv2d(in_channels=features[0], out_channels=self.NUM_OF_CLASSES, kernel_size=1)
 
         # Other layers
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
