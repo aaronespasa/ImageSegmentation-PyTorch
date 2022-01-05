@@ -1,2 +1,2 @@
-# ImageSegmentation-PyTorch
-Learn image segmentation using PyTorch
+# Learn image segmentation using PyTorch
+
