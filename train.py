@@ -24,6 +24,7 @@ IMAGE_HEIGHT = 160 # 1280 originally
 IMAGE_WIDTH = 240  # 1918 originally
 PIN_MEMORY = True
 LOAD_MODEL = False
+CHECKPOINT_NAME = "checkpoint.pth.tar"
 DATASET_DIR = "Datasets/downloads/carvana"
 TRAIN_IMG_DIR = f"{DATASET_DIR}/train_images/"
 TRAIN_MASK_DIR = f"{DATASET_DIR}/train_masks/"
@@ -104,7 +105,11 @@ def main():
         PIN_MEMORY
     )
 
+    if LOAD_MODEL:
+        load_checkpoint(torch.load(CHECKPOINT_NAME))
+
     scaler = torch.cuda.amp.GradScaler()
+
     for epoch in range(NUM_EPOCHS):
         train_fn(train_loader, model, optimizer, loss_fn, scaler)
 
