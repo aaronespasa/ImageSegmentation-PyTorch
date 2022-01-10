@@ -3,8 +3,15 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 from tqdm import tqdm
 import torch.nn as nn
-import torch.optim as option
+import torch.optim as optim
 from Models.unet import UNet
+from utils.utils import (
+    load_checkpoint,
+    save_checkpoint,
+    get_loaders,
+    check_accuracy,
+    save_predictions_as_imgs
+)
 
 #############################################
 ########### HYPERPARAMETERS #################
@@ -74,6 +81,44 @@ def main():
             ToTensorV2(),
         ],
     )
+
+    ## For multiple output channels (N):
+    # model = UNet(in_channels=3, out_channels=N).to(DEVICE)
+    # loss_fn = nn.CrossEntropyLoss()
+
+    # For just one output channel:
+    model = UNet(in_channels=3, out_channels=1).to(DEVICE)
+    loss_fn = nn.BCEWithLogitsLoss()  # applies sigmoid to the output of the model
+
+    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+
+    train_loader, val_loader = get_loaders(
+        TRAIN_IMG_DIR,
+        TRAIN_MASK_DIR,
+        VAL_IMG_DIR,
+        VAL_MASK_DIR,
+        BATCH_SIZE,
+        train_transform,
+        val_transforms,
+        NUM_WORKERS,
+        PIN_MEMORY
+    )
+
+    scaler = torch.cuda.amp.GradScaler()
+    for epoch in range(NUM_EPOCHS):
+        train_fn(train_loader, model, optimizer, loss_fn, scaler)
+
+        checkpoint = {
+            "state_dict": model.state_dict(),
+            "optimizer": optimizer.state_dict(),
+        }
+        save_checkpoint(checkpoint)
+
+        check_accuracy(val_loader, model, device=DEVICE)
+
+        save_predictions_as_imgs(
+            val_loader, model, folder="output", device=DEVICE
+        )
 
 if __name__ == '__main__':
     main()
