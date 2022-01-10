@@ -65,7 +65,7 @@ def check_accuracy(loader, model, device="cuda"):
     with torch.no_grad():
         for x, y in loader:
             x = x.to(device)
-            y = y.to(device)
+            y = y.to(device).unsqueeze(1) # label is grayscale, so unsqueeze
 
             # The following part will differ if we have > 2 classes
             preds = torch.sigmoid(model(x))
