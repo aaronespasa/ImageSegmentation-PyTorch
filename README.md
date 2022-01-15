@@ -37,9 +37,15 @@ $ cd AppleSiliconDependencies && bash apple-silicon-dependencies.sh
 $ cd ..
 ```
 
-## Install the dependencies
+### Install the dependencies
 
 Install the Python requirements:
 ```bash
 $ pip install -r requirements.txt
+```
+
+### Create a Jupyter Kernel for the environment
+
+```bash
+$ ipython kernel install --name "segm-venv" --user
 ```
